@@ -1,7 +1,13 @@
+'''
+Created on Jan 27, 2021
+
+@author: icont
+'''
 import unittest
 import sys
 from contextlib import contextmanager
 from io import StringIO
+from pickle import TRUE
 
 #################################################################################
 # TESTING OUTPUTS
@@ -22,8 +28,18 @@ def captured_output():
 
 # implement this function
 def is_perfect(n):
-    pass
-
+    sum=0
+    i=1
+    while i<n:
+        if n % i == 0:
+            sum +=i
+        i+=1
+    if sum == n:
+       return True
+    else:
+        return False
+    
+    
 # (3 points)
 def test1():
     tc = unittest.TestCase()
@@ -33,6 +49,8 @@ def test1():
         tc.assertFalse(is_perfect(n), '{} should not be perfect'.format(n))
     for n in range(30, 450):
         tc.assertFalse(is_perfect(n), '{} should not be perfect'.format(n))
+        
+        
 
 #################################################################################
 # EXERCISE 2
@@ -41,6 +59,15 @@ def test1():
 # implement this function
 def multiples_of_3_and_5(n):
     pass
+    i=1
+    sum=0
+    while i<n:
+        if i%3 == 0:
+            sum += i
+        elif i%5 == 0:
+            sum += i
+        i+=1
+    return sum
 
 # (3 points)
 def test2():
@@ -53,7 +80,17 @@ def test2():
 # EXERCISE 3
 #################################################################################
 def integer_right_triangles(p):
-    pass
+    total = 0
+    a,b,c = 0,0,0
+    for a in range (1,p):
+        for b in range (a,p):
+            for c in range (b,p):
+                if a**2 + b**2 == c**2:
+                    if a + b + c == p:
+                        total +=1
+    return total
+    
+
 
 def test3():
     tc = unittest.TestCase()
@@ -67,7 +104,39 @@ def test3():
 
 # implement this function
 def gen_pattern(chars):
-    pass
+    reverse = chars[::-1]
+    high = len(chars)-1
+    flip =0
+    low = 0
+    length = len(chars)*4-3
+    final = ''
+    
+    if flip == 0:
+        while high>0:
+            total = reverse[0:low] + chars[high:len(chars)] 
+            final = final + ('.'.join(total).center(length, '.')) + "\n"
+            low+=1
+            high-=1
+           
+        if high == 0:
+            flip =1
+            low = len(chars)-1
+        
+    if flip ==1:
+        while high<len(chars)-1:
+            total = reverse[0:low] + chars[high:len(chars)]
+            final = final + ('.'.join(total).center(length, '.')) + "\n"
+            low-=1
+            high+=1
+           
+            
+        if high == len(chars)-1:
+            total = reverse[0:low] + chars[high:len(chars)]
+            final = final + ('.'.join(total).center(length, '.')) 
+            low-=1
+            high+=1
+            
+    print(final)
 
 def test4():
     tc = unittest.TestCase()
@@ -77,7 +146,7 @@ def test4():
     with captured_output() as (out,err):
         gen_pattern('@%')
         tc.assertEqual(out.getvalue().strip(),
-        """
+"""
 ..%..
 %.@.%
 ..%..
