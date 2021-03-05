@@ -109,6 +109,8 @@ class ArrayList:
             self.data[i-1] = self.data[i]
         self.len += -1
 
+    ### stringification ###
+
     def __str__(self):
         """Implements `str(self)`. Returns '[]' if the list is empty, else
         returns `str(x)` for all values `x` in this list, separated by commas
