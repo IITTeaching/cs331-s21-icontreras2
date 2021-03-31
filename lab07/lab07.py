@@ -14,18 +14,45 @@ class ExtensibleHashTable:
 
     def find_bucket(self, key):
         # BEGIN_SOLUTION
+        bidx = hash(key) % self.n_buckets
+        for i in range (bidx,self.n_buckets):
+            if not self.buckets[i] or self.buckets[i][0] == key:
+                return i
+        raise KeyError
         # END_SOLUTION
 
-    def __getitem__(self,  key):
+    def __getitem__(self, key):
         # BEGIN_SOLUTION
+        if self.buckets[self.find_bucket(key)] is None:
+            raise KeyError
+        return self.buckets[self.find_bucket(key)][1]
         # END_SOLUTION
-
+        
+    def extend (self):
+        # BEGIN SOLUTION
+        newData = [None] * 2 * self.n_buckets
+        tempData = self.buckets
+        self.buckets = newData
+        self.n_buckets *= 2
+        for el in tempData:
+            if el is not None:
+                hnew = self.find_bucket(el[0])
+                newData[hnew] = el
+        # END SOLUTION
+      
     def __setitem__(self, key, value):
         # BEGIN_SOLUTION
+        if self.nitems >= (self.fillfactor * self.n_buckets):
+            self.extend()
+        self.buckets[self.find_bucket(key)] = (key, value)
+        self.nitems+=1
         # END_SOLUTION
 
     def __delitem__(self, key):
         # BEGIN SOLUTION
+        assert self.buckets[self.find_bucket(key)]
+        self.buckets[self.find_bucket(key)] = None
+        self.nitems-=1
         # END SOLUTION
 
     def __contains__(self, key):
@@ -43,6 +70,9 @@ class ExtensibleHashTable:
 
     def __iter__(self):
         ### BEGIN SOLUTION
+        for i in range(self.n_buckets):
+            if self.buckets[i] is not None:
+                yield self.buckets[i][0]
         ### END SOLUTION
 
     def keys(self):
@@ -50,11 +80,16 @@ class ExtensibleHashTable:
 
     def values(self):
         ### BEGIN SOLUTION
+        for i in range(self.n_buckets):
+            if self.buckets[i] is not None:
+                yield self.buckets[i][1]
         ### END SOLUTION
 
     def items(self):
         ### BEGIN SOLUTION
-        ### END SOLUTION
+        for i in range(self.n_buckets):
+            if self.buckets[i] is not None:
+                yield self.buckets[i]
 
     def __str__(self):
         return '{ ' + ', '.join(str(k) + ': ' + str(v) for k, v in self.items()) + ' }'
