@@ -7,14 +7,21 @@ class AVLTree:
             self.val = val
             self.left = left
             self.right = right
-
+        
+        @staticmethod    
+        def check_bf(node):
+            return AVLTree.Node.height(node.right) - AVLTree.Node.height(node.left)
+               
         def rotate_right(self):
             n = self.left
             self.val, n.val = n.val, self.val
             self.left, n.left, self.right, n.right = n.left, n.right, n, self.right
-
+            #    y    alpha    gamma        beta    = alpha    beta    y   gamma 
         def rotate_left(self):
             ### BEGIN SOLUTION
+            m = self.right
+            self.val, m.val = m.val, self.val
+            self.left, self.right, m.left, m.right = m, m.right, self.left, m.left
             ### END SOLUTION
 
         @staticmethod
@@ -27,20 +34,73 @@ class AVLTree:
     def __init__(self):
         self.size = 0
         self.root = None
+        self.bf = 0
 
     @staticmethod
     def rebalance(t):
         ### BEGIN SOLUTION
+        while AVLTree.Node.check_bf(t) == -2:
+            try:
+                if AVLTree.Node.check_bf(t.left) >= 1:
+                    t.left.rotate_left()
+            except:
+                pass 
+            t.rotate_right()
+        while AVLTree.Node.check_bf(t) == 2:
+            try:
+                
+                if AVLTree.Node.check_bf(t.right) <= -1:
+                    t.right.rotate_right()
+            except:
+                pass 
+            t.rotate_left()
         ### END SOLUTION
-
+   
     def add(self, val):
         assert(val not in self)
         ### BEGIN SOLUTION
+        def add_rec(node):
+            if not node:
+                return AVLTree.Node(val)
+            elif val < node.val:
+                node.left = add_rec(node.left)
+                AVLTree.rebalance(node)
+                return node
+            elif val > node.val:
+                node.right = add_rec(node.right)
+                AVLTree.rebalance(node)
+                return node 
+        self.root = add_rec(self.root)
+        self.size +=1
         ### END SOLUTION
 
     def __delitem__(self, val):
         assert(val in self)
         ### BEGIN SOLUTION
+        def del_rec(node, val):
+            if not node:
+                return None
+            elif val < node.val:
+                node.left = del_rec(node.left, val)
+            elif val > node.val:
+                node.right = del_rec(node.right, val)
+            elif node.val == val:
+                if not node.right and not node.left:
+                    return None
+                elif node.right and not node.left:
+                    return node.right
+                elif not node.right and node.left:
+                    return node.left
+                elif node.left and node.right:
+                    m = node.left
+                    while m.right:
+                        m = m.right
+                    node.val = m.val
+                    node.left = del_rec(node.left, m.val)
+            AVLTree.rebalance(node)
+            return node
+        self.root = del_rec(self.root,val)
+        self.size -=1
         ### END SOLUTION
 
     def __contains__(self, val):
@@ -234,4 +294,4 @@ def main():
     print(80 * "#" + "\nALL TEST CASES FINISHED SUCCESSFULLY!\n" + 80 * "#")
 
 if __name__ == '__main__':
-    main()
+    main()    
