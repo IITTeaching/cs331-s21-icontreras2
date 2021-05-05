@@ -1,23 +1,45 @@
 from unittest import TestCase
 import random
+import statistics
 
 def quicksort(lst,pivot_fn):
     qsort(lst,0,len(lst) - 1,pivot_fn)
 
 def qsort(lst,low,high,pivot_fn):
     ### BEGIN SOLUTION
+    if low < high:
+        p = hoare_partition(lst,low,high,pivot_fn)
+        qsort(lst,low,p-1,pivot_fn)
+        qsort(lst,p+1,high,pivot_fn)
     ### END SOLUTION
+
+def hoare_partition(lst,low,high,pivot_fn):
+    pvt= pivot_fn(lst,low,high)
+    i = low
+    j = high
+    while True:
+        while lst[i] < pvt:
+            i+=1
+        while lst[j] > pvt:
+            j-=1
+        if i >= j:
+            return j  
+        else: 
+            lst[i], lst[j] = lst[j], lst[i]
 
 def pivot_first(lst,low,high):
     ### BEGIN SOLUTION
+    return lst[low]
     ### END SOLUTION
 
 def pivot_random(lst,low,high):
     ### BEGIN SOLUTION
+    return lst[random.randint(low,high)]
     ### END SOLUTION
 
 def pivot_median_of_three(lst,low,high):
     ### BEGIN SOLUTION
+    return statistics.median([lst[low], lst[(low + high) // 2], lst[high]])
     ### END SOLUTION
 
 ################################################################################
